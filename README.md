@@ -83,6 +83,12 @@ Second, we can't confidently deduce the motivation behind the answers which the 
 Third, we do not know where the exact "cutoff" point for every respondent is. We define the cutoff point as a certain value of the variables population vaccinated and infection rate at which a respondent changes his/her behavior. For example, in our first hypothesis, we state that at a certain percentage point of the vaccinated population, respondents would theoretically change their vaccination behavior. This would be a cutoff point. Since population vaccinated and infection rate can theoretically take on infinite numbers, we just hardly can predict where certain cutoff points are. We only ask for Y infection rate and Z percentages of the population vaccinated. Moreover, the interaction between our two independent variables makes it even harder to find the true cutoff point. This issue is even more exacerbated, when we think about, that every respondents has an individual cutoff point.  
 While we are aware of these problems, we nonetheless believe that our study is a good starting point to address limits of previous research that we highlighted in the introduction, e.g., we consider the - realistic yet barely researched - scenario of having a very low rate of the population previously vaccinated.
 
+
+### Implementation 
+
+In this section, we will reflect on the process leading to the finished questionnaire and report. The implementation of the questionnaire itself was less of a challenge given the material we had (such as projects from past years). There were minor aspects such as to make sure that everything looks fine or to implement the risk game, which took some time to figure out, but not too long. It may have been helpful to have some more slides to look up fast (instead of having to rewatch the videos). This may have also helped us to structure our work process some more. A larger challenge was to construct the questionnaire out of the research question, to find appropriate questions, and to use the benefits while dealing with the disavantages of online experiments as this was not really covered in class. Furthermore, we were not really certain that we were done after we had completed programming the questionnaire. Something like a checklist may have been of help.
+
+
 ### References
 
 Becker, K.B. (2020). "Die andere Hälfte überzeugen". Frankfurter Allgemeine Zeitung. [Last Accessed:  22.12.2020.] https://www.faz.net/aktuell/politik/inland/aerztin-heidrun-thais-will-zur-corona-impfung-motivieren-17109316.html.
