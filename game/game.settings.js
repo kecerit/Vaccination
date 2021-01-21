@@ -29,7 +29,7 @@ module.exports = {
      * used to initialize the game timer for the step.
      */
     TIMER: {
-      introduction: 50000,
+      // introduction: 50000,
       response: 10000
     },
 
@@ -40,6 +40,9 @@ module.exports = {
 
     // Number of coins available each round.
     COINS: 1,
+
+    // Minutes to complete the task.
+    COMPLETE_TIME: "5-10",
 
     // Exchange rate coins to dollars.
     EXCHANGE_RATE: 1,
