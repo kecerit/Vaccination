@@ -25,6 +25,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
   stager.setOnInit(function() {
 
+      // numeric values for the risk stage.
+      this.riskStage = node.game.plot.normalizeGameStage('risk');
 
     // Feedback.
     memory.view('feedback').save('feedback.csv', {
@@ -32,11 +34,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       keepUpdated: true
     });
 
-    // Email.
-    memory.view('email').save('email.csv', {
-      header: [ 'timestamp', 'player', 'email' ],
-      keepUpdated: true
-    });
+    // // Email.
+    // memory.view('email').save('email.csv', {
+    //   header: [ 'timestamp', 'player', 'email' ],
+    //   keepUpdated: true
+    // });
 
 
     // Vaccination.
@@ -44,7 +46,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       header: [
         'session', 'player', 'round', 'vaccinate','treatment','poprate'
       ],
-
       keepUpdated: true
     });
 
@@ -55,7 +56,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         'maritalStatus',
         'education','countryOfOrigin','income','occupation'
       ],
-
       keepUpdated: true
     });
 
@@ -65,7 +65,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         'session', 'player', 'communityService', 'confGov',
         'confPolParties', 'confParliament' , 'confCompanies', 'libCons'
       ],
-
       keepUpdated: true
     });
 
@@ -74,7 +73,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       header: [
         'session', 'player', 'perception', 'eating','exercises'
       ],
-
       keepUpdated: true
     });
 
@@ -84,7 +82,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       header: [
         'session', 'player','risk', 'totalMove'
       ],
+      keepUpdated: true
+    });
 
+    // Risk.
+    memory.view('covid').save('covid.csv', {
+      header: [
+        'session', 'player','covid'
+      ],
       keepUpdated: true
     });
 
@@ -126,35 +131,45 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
           append: true
         });
 
-        // Update win.
-        if (memory.stage['10.1.1']) {
+      });
 
-          // Coins for the questions.
-          gameRoom.updateWin(node.game.pl.first().id, settings.COINS);
+    });
 
-          // Bonus from the RiskGauge.
-          let item = memory.stage['10.1.1'].last();
+    node.on.data('end', function(msg) {
 
-          gameRoom.updateWin(node.game.pl.first().id,item.reward);
+        let client = channel.registry.getClient(msg.from);
+        if (!client) return;
+
+        if (client.checkout) {
+            // Just resend bonus
+            gameRoom.computeBonus({
+                clients: [ msg.from ],
+                dump: false
+             });
+        }
+        else {
+
+            // Bonus from the RiskGauge.
+            let item = memory.stage[this.riskStage].last();
+
+            // Coins for the questions.
+            gameRoom.updateWin(msg.from, (settings.COINS + item.reward), {
+                clear: true
+            });
+
+            // Compute total win.
+            gameRoom.computeBonus({
+                clients: [ msg.from ]
+            });
+
+            // Mark client checked out.
+            channel.registry.checkOut(msg.from);
+
+            // Select all 'done' items and save everything as json.
+            memory.select('done').save('memory_all.json');
 
         }
 
-        // Select all 'done' items and save everything as json.
-        memory.select('done').save('memory_all.json');
-
-        // Compute total win.
-        gameRoom.computeBonus();
-
-      });
-
-
-      
-
     });
 
-    stager.setOnGameOver(function() {
-
-
-
-    });
   };

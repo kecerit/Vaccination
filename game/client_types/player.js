@@ -87,7 +87,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
   stager.extendStep('introduction', {
 
     init: function() {
-      node.game.visualTimer.show();
+      // node.game.visualTimer.show();
     },
     frame: 'introduction.htm',
     cb: function() {
@@ -97,8 +97,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       // executed on the client.
       s = node.game.settings;
       // Replace variables in the instructions.
+      W.setInnerHTML('time', s.COMPLETE_TIME);
       W.setInnerHTML('coins', s.COINS);
-      W.setInnerHTML('exchange-rate', (s.EXCHANGE_RATE));
+      // W.setInnerHTML('exchange-rate', (s.EXCHANGE_RATE));
     }
   });
 
@@ -106,6 +107,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
 
   stager.extendStep('disease', {
+    name: 'Terminology',
     init: function() {
       // No need for the timer.
       node.game.visualTimer.hide();
@@ -137,7 +139,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
         className: 'centered',
         panel: false,
-
+        required: true
       }
     }
   });
@@ -147,6 +149,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
   // Show the treatment scenario.
   // Check settings for related scenario.
   stager.extendStep('treat', {
+    name: 'Scenario',
     frame: settings.scenario,
     init: function() {
       node.game.backButton.hide();
@@ -199,12 +202,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Settings here apply to all forms.
         formsOptions: {
           shuffleChoices: true
-        }
+        },
+        required: true
       }
     }
   });
 
   stager.extendStep('vaccination', {
+    name: 'Your Decision',
     init: function() {
 
       node.game.backButton.hide();
@@ -285,6 +290,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
   });
 
   stager.extendStep('opend', {
+    name: "Overview",
     frame: 'opend.htm',
     init: function() {
       node.game.visualTimer.hide();
@@ -292,12 +298,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     cb: function() {
 
       var s;
-
       s = node.game.settings;
 
       // All decisions
       node.get('decisions', function(data) {
-
 
         // Display information to screen.
         W.setInnerHTML('decision1', data.decisions[0] ?
@@ -326,13 +330,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       options: {
         title: false,
         panel: false,
-        mainText: 'Can you briefly explain why you make these decisions ?',
+        mainText: 'Can you briefly explain why you made these decisions?',
         sent: 'send',
         id: 'opend',
         rows: 5,
         showSubmit: false,
         width: "100%",
-        minChars: 50,
+        minChars: 150,
         requiredChoice: true
       },
 
@@ -352,7 +356,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       ref: 'demo1',
       options: {
         id: 'demo1',
-        mainText: 'Your demographics.',
+        mainText: 'Please answer now a brief survery about your demographics.',
         forms: [
           {
             name: 'ChoiceTable',
@@ -500,6 +504,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
           formsOptions: {
             requiredChoice: true,
           },
+          required: true,
 
           className: 'centered'
         }
@@ -534,7 +539,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         ref: 'poli',
         options: {
           id: "pol",
-          mainText: 'A few more questions and we are done.',
+          mainText: 'Please answer a few more questions about politics.',
           forms: [
             {
               name: 'ChoiceTable',
@@ -544,8 +549,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
               " how often have you carried out this volunteering " +
               "within the past 12 months?",
               choices: [
-                "I did not volunteer in the last 12 months",
-                "Very ocassionally",
+                "Never",
+                "Once",
                 "A couple of times last year",
                 "One or two days a month",
                 "One day a week or more",
@@ -560,16 +565,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
               " For each one, could you tell me how much confidence" +
               " you have in them?",
               items: [
-                'The government (in your nation’s capital)',
-                'Political Parties',
+                'The national/federal government',
+                'Political parties',
                 'Parliament',
-                'Major Companies'
+                'Major Corporations'
               ],
                 choices: [
-                  "A great deal",
-                  "Quite a lot",
-                  "Not very much",
-                  "None at all",
+                    "None at all",
+                    "Not very much",
+                    "Quite a lot",
+                    "A great deal",
                   "Prefer not to say"
                 ],
                   shuffleItems: false,
@@ -591,7 +596,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
               formsOptions: {
                 requiredChoice: true,
               },
-
+              required: true,
               className: 'centered'
             }
           },
@@ -602,10 +607,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             // With done, return related information.
             return {
               communityService: values.forms.CommunityService.value ,
-              confGov: vfc.items['The government (in your nation’s capital)'].value,
-              confPolParties: vfc.items['Political Parties'].value,
+              confGov: vfc.items['The national/federal government'].value,
+              confPolParties: vfc.items['Political parties'].value,
               confParliament: vfc.items.Parliament.value,
-              confCompanies: vfc.items['Major Companies'].value,
+              confCompanies: vfc.items['Major Corporations'].value,
               libCons: values.forms.libcons.value,
 
             };
@@ -628,12 +633,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             ref: 'health',
             options: {
               id: "health",
-              mainText: 'A few more questions and we are done.',
+              mainText: 'Please answer a few questions about your life style.',
               forms: [
                 {
                   name: 'Slider',
-                  id: 'Perception',
-                  mainText: "On a scale of 1 to 10, how healthy do you" +
+                  id: 'perception',
+                  mainText: 'On a scale of 1 to 10, where 1 means "not at ' +
+                  'all healthy" and 10 means "very healthy," how healthy do you ' +
                   "consider yourself?",
                   min: 1,
                   max: 10,
@@ -671,6 +677,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             formsOptions: {
               requiredChoice: true,
             },
+            required: true,
 
             className: 'centered'
           }
@@ -679,12 +686,57 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
           // With done, return related information.
           return {
-            perception: values.forms.Perception.value ,
+            perception: values.forms.perception.value ,
             eating: values.forms.eating.value,
             exercises: values.forms.exercises.value
           };
         }
       });
+
+
+      stager.extendStep('covid', {
+
+        cb: function() {
+          W.cssRule('.choicetable-maintext { padding-bottom: 20px; }');
+          W.cssRule('.choicetable-left, .choicetable-right ' +
+          '{ width: 200px !important; }');
+          parent.scrollTo(0,0);
+        },
+
+        widget: {
+          name: 'ChoiceManager',
+          ref: 'health',
+          options: {
+            id: "covid",
+            mainText: 'Please answer a last <em>optional</em> question about your experience with Covid-19 virus.',
+            hint: 'If you are uncomfortable answering the question below, please select "Prefer not to answer."',
+            forms: [
+              {
+                name: 'ChoiceTable',
+                id: 'knowcovid',
+                mainText: "Do you know somebody close to you (including yourself) who tested positive to the Covid-19 virus?",
+                choices: [ "Yes", "No", "Prefer not to answer" ],
+              shuffleItems: false,
+              },
+
+          ],
+          formsOptions: {
+            requiredChoice: true,
+          },
+          required: true,
+
+          className: 'centered'
+        }
+      },
+      done: function(values) {
+
+        // With done, return related information.
+        return {
+          covid: values.forms.knowcovid.value,
+        };
+      }
+    });
+
 
 
 
@@ -700,6 +752,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             revealProbBomb: true,
             totBoxes: 50,
             maxBoxes: 49,
+            required: true
           }
         },
         done: function(values) {
@@ -714,12 +767,52 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
       });
 
 
-
+      stager.extendStep('feedback', {
+          widget: {
+              name: 'Feedback',
+              options: {
+                  required: true,
+                  title: false,
+                  panel: false,
+                  minChars: 50,
+                  showSubmit: false,
+                  mainText: 'Thank you for participating. This was a pilot of ' +
+                      'the main study, therefore we are very interested in ' +
+                      'hearing your <strong>feedback</strong> about the ' +
+                      'following points:<br/><br/><em><ol>' +
+                      '<li>Was the survey too long or too short?</li>' +
+                      '<li>Did you feel you could express your opinion?</li>' +
+                      '<li>Did we leave out any important question?</li>' +
+                      '<li>Did you find any question unclear or ' +
+                      'uncomfortable?</li>' +
+                      '<li>Did you feel that the survey was ' +
+                      'balanced, or ' +
+                      'rather biased towards the left or right?</li>' +
+                      '<li>Did you experience any technical difficulty?</li>' +
+                      '<li>How can we improve the study?</li></ol>'
+              }
+          },
+          cb: function() {
+              W.cssRule('#container { margin-top: 30px !important; }');
+              parent.scrollTo(0,0);
+          },
+          done: function(values) {
+              console.log(values);
+              return values;
+          }
+      });
 
 
       stager.extendStep('end', {
-        widget: 'EndScreen',
+        widget: {
+            name: 'EndScreen',
+            options: {
+                feedback: false,
+                email: false
+            }
+        },
         init: function() {
+          node.say('end');
           node.game.visualTimer.destroy();
           node.game.doneButton.destroy();
         }
